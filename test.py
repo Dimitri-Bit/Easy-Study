@@ -1,6 +1,6 @@
 import os
-from modules.GPT import ChatGPT
-from modules.text_splitter import Splitter
+from modules.gpt.GPT import ChatGPT
+from modules.text.text_splitter import Splitter
 from dotenv import load_dotenv
 
 load_dotenv()
