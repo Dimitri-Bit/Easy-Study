@@ -1,10 +1,12 @@
 import json
 from flask import Flask, request
-from flask_login import LoginManager, UserMixin, \
-                                login_required, login_user, logout_user
+from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user
 from modules.auth.user import User
+from modules.database.db import Database_Manager
+
 
 app = Flask(__name__)
+database_manager = Database_Manager()
 
 
 app.config.update(
@@ -23,8 +25,8 @@ def login():
     request_data = request.get_json()
     username = request_data['username']
     password = request_data['password']
-    user = User(1, username, password)
 
+    user = User(1, username, password)
     login_user(user)
     print(login_user)
 
