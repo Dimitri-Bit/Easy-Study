@@ -1,13 +1,10 @@
 import sqlite3
 from pyargon2 import hash
 
-DATABASE = "db.db"
-SALT = "Some_Random_Salt_HeHe"
-
 class Database_Manager:
 
-    def __init__(self):
-        self.connection = sqlite3.connect(DATABASE, check_same_thread=False)
+    def __init__(self, database_url, salt):
+        self.connection = sqlite3.connect(database_url, check_same_thread=False)
         self.cursor = self.connection.cursor()
         self.init_tables()
 
