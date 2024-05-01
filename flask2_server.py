@@ -16,6 +16,7 @@ app.config['JWT_TOKEN_LOCATION'] = ['headers']
 
 jwt = JWTManager(app)
 
+
 def get_hashed_pass(password):
     hash_pass = password_hasher.hash(password)
     return hash_pass
@@ -66,6 +67,7 @@ def login():
     
     access_token = create_access_token(identity=user[1])
     return json.dumps({"message": "Successfully logged in", "access_token": access_token}), 200
+
 
 if __name__ == "__main__":
     app.run(port=8080)
