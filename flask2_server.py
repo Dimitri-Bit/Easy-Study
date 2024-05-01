@@ -1,16 +1,24 @@
 from flask import Flask, jsonify, session, request, redirect, url_for
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, get_jwt
 from modules.database.db import Database_Manager
+from argon2 import PasswordHasher
 import json
 
+__SALT__ = '1531432'
+
 app = Flask(__name__)
-db_manager = Database_Manager('db.db', 'temp_will_move_to_env')
+db_manager = Database_Manager('db.db', __SALT__)
+password_hasher = PasswordHasher()
 
 app.config['SECRET_KEY'] = 'temp_will_move_to_env'
 app.config['JWT_SECRET_KEY'] = 'temp_will_move_to_env'
 app.config['JWT_TOKEN_LOCATION'] = ['headers']
 
 jwt = JWTManager(app)
+
+def get_hashed_pass(password):
+    hash_pass = password_hasher.hash(password)
+    return hash_pass
 
 
 @app.route("/register", methods=["POST"])
@@ -30,8 +38,9 @@ def register():
     if db_user:
         return json.dumps({"message": "An account with that username already exists"}), 401
     
-    db_manager.add_user(username, password)
+    db_manager.add_user(username, get_hashed_pass(password))
     return json.dumps({"message": "User successfully created"}), 201
+
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -52,7 +61,7 @@ def login():
     
     user = list(db_user)[0]
 
-    if not user[2] == password: # Don't let the user know which credential is incorrect (incorrect password)
+    if not get_hashed_pass(user[2]) == get_hashed_pass(password): # Don't let the user know which credential is incorrect (incorrect password)
         return json.dumps({"message": "Incorrect username and or password"}), 404
     
     access_token = create_access_token(identity=user[1])
