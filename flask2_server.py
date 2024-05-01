@@ -33,6 +33,30 @@ def register():
     db_manager.add_user(username, password)
     return json.dumps({"message": "User successfully created"}), 201
 
+@app.route('/login', methods=['POST'])
+def login():
+    request_data = request.get_json()
+    username = request_data['username']
+    password = request_data['password']
+
+    if len(username) < 3:
+        return json.dumps({"message": "Username must be longer then 2 characters"}), 401
+
+    if len(password) < 8:
+        return json.dumps({"message": "Password must be longer then 7 characters"}), 401
+    
+    db_user = db_manager.get_user_by_username(username)
+
+    if not db_user: # Don't let the user know which credential is incorrect (incorrect username)
+        return json.dumps({"message": "Incorrect username and or password"}), 404
+    
+    user = list(db_user)[0]
+
+    if not user[2] == password: # Don't let the user know which credential is incorrect (incorrect password)
+        return json.dumps({"message": "Incorrect username and or password"}), 404
+    
+    access_token = create_access_token(identity=user[1])
+    return json.dumps({"message": "Successfully logged in", "access_token": access_token}), 200
 
 if __name__ == "__main__":
     app.run(port=8080)
