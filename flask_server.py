@@ -26,11 +26,19 @@ def login():
     username = request_data['username']
     password = request_data['password']
 
-    user = User(1, username, password)
-    login_user(user)
-    print(login_user)
+    db_user = database_manager.get_user_by_username(username)
+    
+    if not db_user:
+        return json.dumps({"message": "Account with that username does not exist"}), 404
+    
+    db_user = list(db_user)[0]
 
-    return json.dumps({"success": "You have logged in"}), 200
+    if not db_user['password'] == password:
+        return json.dumps({"message": "Incorrect username or password"}), 401
+                
+    user = User(int(db_user['id']), db_user['username'], db_user['password'])
+    login_user(user)
+    return json.dumps({"message": "You have logged in"})
     
 
 if __name__ == "__main__":

@@ -1,6 +1,5 @@
 import sqlite3
 from pyargon2 import hash
-from modules.auth.user import User
 
 DATABASE = "db.db"
 SALT = "Some_Random_Salt_HeHe"
