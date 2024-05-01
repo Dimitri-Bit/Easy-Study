@@ -16,12 +16,13 @@ class Database_Manager:
 
 
     def get_user_by_username(self, username):
-        query = f"SELECT * from users where username = '{username}'"
+        query = f"SELECT * from users where username = \'{username}\'"
         rows = self.cursor.execute(query).fetchall()
         return rows
 
     
     def add_user(self, username, password):
-        query = f"INSERT INTO users VALUES (NULL, '{username}', '{password}')"
+        query = f"INSERT INTO users VALUES (NULL, \'{username}\', \'{password}\')"
+        print(query)
         self.cursor.execute(query)
         self.connection.commit()
