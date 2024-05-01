@@ -10,7 +10,7 @@ class Database_Manager:
 
     
     def init_tables(self):
-        sql = "CREATE TABLE IF NOT EXISTS users (ID INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, password TEXT)"
+        sql = "CREATE TABLE IF NOT EXISTS users (ID INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, password TEXT)"
         self.cursor.execute(sql)
         self.connection.commit()
 
