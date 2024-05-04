@@ -34,7 +34,7 @@ def register():
     if db_user:
         return json.dumps({"message": "An account with that username already exists"}), 401
     
-    hashed_password = get_hashed_pass(password)
+    hashed_password = password_hasher.hash(password)
     db_manager.add_user(username, hashed_password)
 
     return json.dumps({"message": "User successfully created"}), 201
