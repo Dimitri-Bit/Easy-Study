@@ -7,6 +7,7 @@ import json
 __SALT__ = '1531432'
 
 app = Flask(__name__)
+
 db_manager = Database_Manager('db.db', __SALT__)
 password_hasher = PasswordHasher()
 
@@ -15,12 +16,6 @@ app.config['JWT_SECRET_KEY'] = 'temp_will_move_to_env'
 app.config['JWT_TOKEN_LOCATION'] = ['headers']
 
 jwt = JWTManager(app)
-
-
-def get_hashed_pass(password):
-    hash_pass = password_hasher.hash(password)
-    return hash_pass
-
 
 @app.route("/register", methods=["POST"])
 def register():
@@ -39,33 +34,36 @@ def register():
     if db_user:
         return json.dumps({"message": "An account with that username already exists"}), 401
     
-    db_manager.add_user(username, get_hashed_pass(password))
+    hashed_password = get_hashed_pass(password)
+    db_manager.add_user(username, hashed_password)
+
     return json.dumps({"message": "User successfully created"}), 201
 
 
 @app.route('/login', methods=['POST'])
 def login():
     request_data = request.get_json()
-    username = request_data['username']
-    password = request_data['password']
+    username, password = request_data['username'], request_data['password']
 
     if len(username) < 3:
-        return json.dumps({"message": "Username must be longer then 2 characters"}), 401
-
+        return json.dumps({"message": "Username must be at least 3 characters long"}), 401
     if len(password) < 8:
-        return json.dumps({"message": "Password must be longer then 7 characters"}), 401
+        return json.dumps({"message": "Password must be at least 8 characters long"}), 401
     
-    db_user = db_manager.get_user_by_username(username)
+    db_user_query = db_manager.get_user_by_username(username)
 
-    if not db_user: # Don't let the user know which credential is incorrect (incorrect username)
-        return json.dumps({"message": "Incorrect username and or password"}), 404
+    if not db_user_query:
+        return json.dumps({"message": "Incorrect username and or password1"}), 404
     
-    user = list(db_user)[0]
+    db_user = list(db_user_query)[0]
+    db_user_password = db_user[2]
 
-    if not get_hashed_pass(user[2]) == get_hashed_pass(password): # Don't let the user know which credential is incorrect (incorrect password)
-        return json.dumps({"message": "Incorrect username and or password"}), 404
-    
-    access_token = create_access_token(identity=user[1])
+    try:
+        password_hasher.verify(db_user_password, password)
+    except:
+        return json.dumps({"message": "Incorrect username and or password2"}), 404
+
+    access_token = create_access_token(identity=db_user[1])
     return json.dumps({"message": "Successfully logged in", "access_token": access_token}), 200
 
 
