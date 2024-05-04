@@ -3,6 +3,7 @@ from flask_jwt_extended import JWTManager, create_access_token, jwt_required, ge
 from modules.database.db import Database_Manager
 from argon2 import PasswordHasher
 import json
+import modules.models.user as user_model
 
 __SALT__ = '1531432'
 
@@ -24,14 +25,13 @@ def register():
     password = request_data['password']
 
     if len(username) < 3:
-        return json.dumps({"message": "Username must be longer then 2 characters"}), 401
-
+        return json.dumps({"message": "Username must be at least 3 characters long"}), 401
     if len(password) < 8:
-        return json.dumps({"message": "Password must be longer then 7 characters"}), 401
+        return json.dumps({"message": "Password must be at least 8 characters long"}), 401
     
-    db_user = db_manager.get_user_by_username(username)
+    db_user_query = db_manager.get_user_by_username(username)
 
-    if db_user:
+    if db_user_query:
         return json.dumps({"message": "An account with that username already exists"}), 401
     
     hashed_password = password_hasher.hash(password)
@@ -54,16 +54,15 @@ def login():
 
     if not db_user_query:
         return json.dumps({"message": "Incorrect username and or password1"}), 404
-    
-    db_user = list(db_user_query)[0]
-    db_user_password = db_user[2]
+
+    db_user = user_model.mapUser(list(db_user_query)[0])
 
     try:
-        password_hasher.verify(db_user_password, password)
+        password_hasher.verify(db_user.password, password)
     except:
         return json.dumps({"message": "Incorrect username and or password2"}), 404
 
-    access_token = create_access_token(identity=db_user[1])
+    access_token = create_access_token(identity=db_user.id)
     return json.dumps({"message": "Successfully logged in", "access_token": access_token}), 200
 
 
