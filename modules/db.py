@@ -1,10 +1,8 @@
+ 
 import sqlite3
 from pyargon2 import hash
 
 class Database_Manager:
-
-    __USERS_TABLE__ = "CREATE TABLE IF NOT EXISTS users (ID INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, password TEXT)"
-    __LECTURES_TABLE__ = "CREATE TABLE IF NOT EXISTS lectures (ID INTEGER PRIMARY KEY, name TEXT, lecture_path TEXT)"
 
     def __init__(self, database_url, salt):
         self.connection = sqlite3.connect(database_url, check_same_thread=False)
@@ -13,8 +11,8 @@ class Database_Manager:
 
     
     def init_tables(self):
-        self.cursor.execute(self.__USERS_TABLE__)
-        self.cursor.execute(self.__LECTURES_TABLE__)
+        sql = "CREATE TABLE IF NOT EXISTS users (ID INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, password TEXT)"
+        self.cursor.execute(sql)
         self.connection.commit()
 
 
