@@ -64,6 +64,7 @@ class Lecture_Manager:
         summarized_string = self.clean_response(''.join(summarized_text))
 
         self.write_file(file_name, summarized_string)
+        self.db_manager.add_lecture(user_id, name, file_name)
 
 
 lecture_manager = Lecture_Manager(Database_Manager("db.db") ,"key")
