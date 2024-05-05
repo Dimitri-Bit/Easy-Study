@@ -18,20 +18,24 @@ app.config['JWT_TOKEN_LOCATION'] = ['headers']
 
 jwt = JWTManager(app)
 
+def validate_credentials(username, password):
+    if len(username) < 3:
+        return {"message": "Username must be at least 3 characters long"}
+    if len(password) < 8:
+        return {"message": "Password must be at least 8 characters long"}
+    return None
+
+
 @app.route("/register", methods=["POST"])
 def register():
     request_data = request.get_json()
-    username = request_data['username']
-    password = request_data['password']
+    username, password = request_data.get('username'), request_data.get('password')
+    error_message = validate_credentials(username, password)
 
-    if len(username) < 3:
-        return json.dumps({"message": "Username must be at least 3 characters long"}), 401
-    if len(password) < 8:
-        return json.dumps({"message": "Password must be at least 8 characters long"}), 401
+    if error_message:
+        return json.dumps(error_message), 401
     
-    db_user_query = db_manager.get_user_by_username(username)
-
-    if db_user_query:
+    if db_manager.get_user_by_username(username):
         return json.dumps({"message": "An account with that username already exists"}), 401
     
     hashed_password = password_hasher.hash(password)
@@ -43,24 +47,23 @@ def register():
 @app.route('/login', methods=['POST'])
 def login():
     request_data = request.get_json()
-    username, password = request_data['username'], request_data['password']
+    username, password = request_data.get('username'), request_data.get('password')
+    error_message = validate_credentials(username, password)
 
-    if len(username) < 3:
-        return json.dumps({"message": "Username must be at least 3 characters long"}), 401
-    if len(password) < 8:
-        return json.dumps({"message": "Password must be at least 8 characters long"}), 401
+    if error_message:
+        return json.dumps(error_message), 401
     
     db_user_query = db_manager.get_user_by_username(username)
 
     if not db_user_query:
-        return json.dumps({"message": "Incorrect username and or password1"}), 404
+        return json.dumps({"message": "Incorrect username and or password"}), 404
 
     db_user = user_model.mapUser(list(db_user_query)[0])
-
+    
     try:
         password_hasher.verify(db_user.password, password)
     except:
-        return json.dumps({"message": "Incorrect username and or password2"}), 404
+        return json.dumps({"message": "Incorrect username and or password"}), 404
 
     access_token = create_access_token(identity=db_user.id)
     return json.dumps({"message": "Successfully logged in", "access_token": access_token}), 200
