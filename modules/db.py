@@ -2,6 +2,9 @@
 import sqlite3
 from pyargon2 import hash
 
+__USERS_TABLE_QUERY__ = "CREATE TABLE IF NOT EXISTS users (ID INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, password TEXT)"
+__LECTURES_TABLE_QUERY__ = "CREATE TABLE IF NOT EXISTS lectures (ID INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, name TEXT, path TEXT)"
+
 class Database_Manager:
 
     def __init__(self, database_url):
@@ -11,8 +14,8 @@ class Database_Manager:
 
     
     def init_tables(self):
-        sql = "CREATE TABLE IF NOT EXISTS users (ID INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, password TEXT)"
-        self.cursor.execute(sql)
+        self.cursor.execute(__USERS_TABLE_QUERY__)
+        self.cursor.execute(__LECTURES_TABLE_QUERY__)
         self.connection.commit()
 
 
@@ -24,6 +27,11 @@ class Database_Manager:
     
     def add_user(self, username, password):
         query = f"INSERT INTO users VALUES (NULL, \'{username}\', \'{password}\')"
-        print(query)
+        self.cursor.execute(query)
+        self.connection.commit()
+
+    
+    def add_lecture(self, user_id, name, path):
+        query = f"INSERT INTO lectures (NULL, \'{user_id}\', \'{name}\', \'{path}\')"
         self.cursor.execute(query)
         self.connection.commit()
