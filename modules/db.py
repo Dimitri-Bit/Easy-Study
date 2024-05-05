@@ -32,6 +32,6 @@ class Database_Manager:
 
     
     def add_lecture(self, user_id, name, path):
-        query = f"INSERT INTO lectures (NULL, \'{user_id}\', \'{name}\', \'{path}\')"
+        query = f"INSERT INTO lectures VALUES (NULL, \'{user_id}\', \'{name}\', \'{path}\')"
         self.cursor.execute(query)
         self.connection.commit()
