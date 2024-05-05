@@ -4,14 +4,12 @@ from flask_jwt_extended import JWTManager, create_access_token, jwt_required, ge
 from argon2 import PasswordHasher
 import json
 
-from modules.database.db import Database_Manager
-import modules.models.user as user_model
-
-__SALT__ = '1531432'
+from modules.db import Database_Manager
+import modules.user as user_model
 
 app = Flask(__name__)
 
-db_manager = Database_Manager('db.db', __SALT__)
+db_manager = Database_Manager('db.db')
 password_hasher = PasswordHasher()
 
 app.config['SECRET_KEY'] = 'temp_will_move_to_env'
