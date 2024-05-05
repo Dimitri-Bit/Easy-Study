@@ -4,7 +4,6 @@ import json
 
 from text_splitter import Splitter
 from GPT import ChatGPT
-from db import Database_Manager
 
 __DIR_NAME__ = "lectures"
 __GPT_PROMPT__ = "You are an academic text shortener and summarizer. You will recieve a block of text which you need to shorten and summarize to the best of your abilities without losing any important context or info. The text may be given to you in various languages, you need to keep the original language. Your response NEEDS to be in a valid json format. The key of your json response will be \"text\" and the value the text you shortened and summarized. It is of great importance you only respond in a valid json format."
