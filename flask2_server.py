@@ -1,8 +1,10 @@
 from flask import Flask, jsonify, session, request, redirect, url_for
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, get_jwt
-from modules.database.db import Database_Manager
+
 from argon2 import PasswordHasher
 import json
+
+from modules.database.db import Database_Manager
 import modules.models.user as user_model
 
 __SALT__ = '1531432'
@@ -54,7 +56,6 @@ def login():
         return json.dumps(error_message), 401
     
     db_user_query = db_manager.get_user_by_username(username)
-
     if not db_user_query:
         return json.dumps({"message": "Incorrect username and or password"}), 404
 
