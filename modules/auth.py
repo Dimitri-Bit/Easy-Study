@@ -35,10 +35,6 @@ class Auth_Manager:
             return json.dumps({"message": "User successfully created"}), 201
     
 
-    def mapUser(touple):
-        return User(touple[0], touple[1], touple[2])
-
-
     def login(self):
             request_data = request.get_json()
             username, password = request_data.get('username'), request_data.get('password')
@@ -48,15 +44,15 @@ class Auth_Manager:
                 return json.dumps(error_message), 401
             
             db_user_query = self.db_manager.get_user_by_username(username)
+            db_user_query = list(db_user_query)[0]
+
             if not db_user_query:
                 return json.dumps({"message": "Incorrect username and or password"}), 404
 
-            db_user = self.mapUser(list(db_user_query)[0])
-            
             try:
-                self.password_hasher.verify(db_user.password, password)
+                self.password_hasher.verify(db_user_query[2], password)
             except:
                 return json.dumps({"message": "Incorrect username and or password"}), 404
 
-            access_token = create_access_token(identity=db_user.id)
+            access_token = create_access_token(identity=db_user_query[1])
             return json.dumps({"message": "Successfully logged in", "access_token": access_token}), 200
