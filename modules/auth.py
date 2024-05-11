@@ -1,7 +1,6 @@
 from flask import Flask, jsonify, session, request, redirect, url_for
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, get_jwt
 from argon2 import PasswordHasher
-import user as user_model
 
 import json
 
@@ -34,6 +33,10 @@ class Auth_Manager:
             self.db_manager.add_user(username, hashed_password)
 
             return json.dumps({"message": "User successfully created"}), 201
+    
+
+    def mapUser(touple):
+        return User(touple[0], touple[1], touple[2])
 
 
     def login(self):
@@ -48,7 +51,7 @@ class Auth_Manager:
             if not db_user_query:
                 return json.dumps({"message": "Incorrect username and or password"}), 404
 
-            db_user = user_model.mapUser(list(db_user_query)[0])
+            db_user = self.mapUser(list(db_user_query)[0])
             
             try:
                 self.password_hasher.verify(db_user.password, password)
