@@ -2,6 +2,9 @@ import os
 import secrets
 import json
 
+from flask import request
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, get_jwt
+
 from text_splitter import Splitter
 from GPT import ChatGPT
 
@@ -45,8 +48,11 @@ class Lecture_Manager:
         return response
 
 
-    def new_lecture(self, user_id, name, text):
+    def new_lecture(self):
         self.init_dir()
+
+        request_data = request.get_json()
+        user_id, name, text = get_jwt_identity(), request_data.get("name"), request_data.get("text")
 
         error_message = self.verify_inputs(name, text)
         if error_message:
