@@ -1,8 +1,8 @@
 from flask import Flask, jsonify, session, request, redirect, url_for
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, get_jwt
 
-from modules.db import Database_Manager
-from modules.auth import Auth_Manager
+from db import Database_Manager
+from auth import Auth_Manager
 
 app = Flask(__name__)
 
