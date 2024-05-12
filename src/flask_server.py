@@ -12,7 +12,7 @@ load_dotenv()
 
 app = Flask(__name__)
 
-db_manager = Database_Manager('db.db')
+db_manager = Database_Manager('./db.db')
 auth_manager = Auth_Manager(db_manager)
 lecture_manager = Lecture_Manager(db_manager, os.getenv('OPENAI_API_KEY'))
 

@@ -65,7 +65,7 @@ class Lecture_Manager:
             response = self.chat_gpt.get_response(t).choices[0].message.content
             summarized_text.append(response)
         
-        file_name = __DIR_NAME__ + "/" + str(secrets.token_urlsafe(8)) + ".json"
+        file_name = "./" + __DIR_NAME__ + "/" + str(secrets.token_urlsafe(8)) + ".json"
         summarized_string = self.clean_response(''.join(summarized_text))
 
         self.write_file(file_name, summarized_string)
