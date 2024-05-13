@@ -44,10 +44,11 @@ class Auth_Manager:
                 return json.dumps(error_message), 401
             
             db_user_query = self.db_manager.get_user_by_username(username)
-            db_user_query = list(db_user_query)[0]
 
             if not db_user_query:
                 return json.dumps({"message": "Incorrect username and or password"}), 404
+            
+            db_user_query = list(db_user_query)[0]
 
             try:
                 self.password_hasher.verify(db_user_query[2], password)
