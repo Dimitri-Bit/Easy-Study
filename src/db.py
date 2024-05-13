@@ -35,3 +35,9 @@ class Database_Manager:
         query = f"INSERT INTO lectures VALUES (NULL, \'{user_id}\', \'{name}\', \'{path}\')"
         self.cursor.execute(query)
         self.connection.commit()
+
+
+    def get_lectures(self, user_id):
+        query = f"SELECT * from lectures where user_id = \'{user_id}\'"
+        rows = self.cursor.execute(query).fetchall()
+        return rows

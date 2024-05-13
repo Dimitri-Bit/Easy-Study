@@ -12,7 +12,7 @@ load_dotenv()
 
 app = Flask(__name__)
 
-db_manager = Database_Manager('../db.db')
+db_manager = Database_Manager('/home/batman/Documents/Easy-Study/db.db')
 auth_manager = Auth_Manager(db_manager)
 lecture_manager = Lecture_Manager(db_manager, os.getenv('OPENAI_API_KEY'))
 
@@ -38,6 +38,14 @@ def login():
 def add_lecture():
     lecture_results = lecture_manager.new_lecture()
     return lecture_results
+
+
+@app.route('/getlectures', methods=['GET'])
+@jwt_required()
+def get_lectures():
+    lecture_results = lecture_manager.get_lectures()
+    return lecture_results
+
 
 if __name__ == "__main__":
     app.run(port=8080)

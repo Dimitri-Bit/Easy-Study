@@ -55,5 +55,5 @@ class Auth_Manager:
             except:
                 return json.dumps({"message": "Incorrect username and or password"}), 404
 
-            access_token = create_access_token(identity=db_user_query[1])
+            access_token = create_access_token(identity=db_user_query[0])
             return json.dumps({"message": "Successfully logged in", "access_token": access_token}), 200

@@ -8,7 +8,7 @@ from flask_jwt_extended import JWTManager, create_access_token, jwt_required, ge
 from text_splitter import Splitter
 from GPT import ChatGPT
 
-__DIR_NAME__ = "lectures"
+__DIR_NAME__ = "/home/batman/Documents/Easy-Study/lectures"
 __GPT_PROMPT__ = "You are an academic text shortener and summarizer. You will recieve a block of text which you need to shorten and summarize to the best of your abilities without losing any important context or info. The text may be given to you in various languages, you need to keep the original language. Your response NEEDS to be in a valid json format. The key of your json response will be \"text\" and the value the text you shortened and summarized. It is of great importance you only respond in a valid json format."
 
 class Lecture_Manager:
@@ -65,10 +65,24 @@ class Lecture_Manager:
             response = self.chat_gpt.get_response(t).choices[0].message.content
             summarized_text.append(response)
         
-        file_name = "./" + __DIR_NAME__ + "/" + str(secrets.token_urlsafe(8)) + ".json"
+        file_name = __DIR_NAME__ + "/" + str(secrets.token_urlsafe(8)) + ".json"
         summarized_string = self.clean_response(''.join(summarized_text))
 
         self.write_file(file_name, summarized_string)
         self.db_manager.add_lecture(user_id, name, file_name)
 
-        return json.dumps({"message": "Successfully created lecture"})
+        return json.dumps({"message": "Successfully created lecture"}), 200
+    
+
+    def get_lectures(self):
+        user_id = get_jwt_identity()
+        lectures = self.db_manager.get_lectures(user_id)
+        
+        if not lectures:
+            return json.dumps({"message": "No lectures found"}), 404
+        
+        lectures_dir = []
+        
+        for lecture in lectures:
+            id = lecture[0]
+            name = lecture[1]
