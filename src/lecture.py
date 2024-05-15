@@ -28,8 +28,8 @@ class Lecture_Manager:
         if len(name) < 3:
             return {"message": "Name must be at least 3 characters long"}
 
-        if len(text) < 16:
-            return {"message": "Text must be at least 16 characters long"}
+        if len(text) < 150:
+            return {"message": "Text must be at least 150 characters long"}
         
         return None
     
@@ -56,7 +56,7 @@ class Lecture_Manager:
 
         error_message = self.verify_inputs(name, text)
         if error_message:
-            json.dumps(error_message), 401
+            return json.dumps(error_message), 401
 
         split_text = self.text_splitter.split_text(text)
         summarized_text = []
@@ -85,4 +85,15 @@ class Lecture_Manager:
         
         for lecture in lectures:
             id = lecture[0]
-            name = lecture[1]
+            name = lecture[2]
+            path = lecture[3]
+
+            file = open(path, "r")
+            contents_json = file.read()
+            contents_json = json.loads(contents_json)
+            contents = contents_json["text"]
+
+            dir = {"id": id, "name": name, "contents": contents}
+            lectures_dir.append(dir)
+
+        return json.dumps({"lectures": lectures_dir}), 200

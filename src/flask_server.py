@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, session, request, redirect, url_for
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, get_jwt
+from datetime import timedelta
 
 from db import Database_Manager
 from auth import Auth_Manager
@@ -19,6 +20,7 @@ lecture_manager = Lecture_Manager(db_manager, os.getenv('OPENAI_API_KEY'))
 app.config['SECRET_KEY'] = 'temp_will_move_to_env'
 app.config['JWT_SECRET_KEY'] = 'temp_will_move_to_env'
 app.config['JWT_TOKEN_LOCATION'] = ['headers']
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
 
 jwt = JWTManager(app)
 
