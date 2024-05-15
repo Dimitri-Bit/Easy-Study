@@ -9,7 +9,7 @@ from text_splitter import Splitter
 from GPT import ChatGPT
 
 __DIR_NAME__ = "/home/batman/Documents/Easy-Study/lectures"
-__GPT_PROMPT__ = "You are an academic text shortener and summarizer. You will recieve a block of text which you need to shorten and summarize to the best of your abilities without losing any important context or info. The text may be given to you in various languages, you need to keep the original language. Your response NEEDS to be in a valid json format. The key of your json response will be \"text\" and the value the text you shortened and summarized. It is of great importance you only respond in a valid json format."
+__GPT_PROMPT__ = "You are an academic text shortener and summarizer. You will recieve a block of text which you need to shorten and summarize to the best of your abilities without losing any important context or info. The text may be given to you in various languages, you need to keep the original language. The summarized text should not be too short, it should still contain all of the important info and context, you should focus on removing thins that repeat themselves and that are just obvious or unnecessary. Your response NEEDS to be in a valid json format. The key of your json response will be \"text\" and the value the text you shortened and summarized. Alongside the shortened text you need to include a couple of questions regarding the summarized text in order for the user to check their knowladge, alongside the questions you need to include the correct answers as well. The quiz should also be a part of the json response, it should be in a json list and each question should be its own object, the object should contain a string with the question and a string with the answer. The quiz list's key NEEDS to be \"quiz\", the answer key NEEDS to be \"answer\" and the question key NEEDS to be \"question\". Please follow the JSON structure exactly. It is of great importance you only respond in a valid json format."
 
 class Lecture_Manager:
     def __init__(self, db_manager, gpt_key):
@@ -92,8 +92,9 @@ class Lecture_Manager:
             contents_json = file.read()
             contents_json = json.loads(contents_json)
             contents = contents_json["text"]
+            quiz = contents_json["quiz"]
 
-            dir = {"id": id, "name": name, "contents": contents}
+            dir = {"id": id, "name": name, "contents": contents, "quiz": quiz}
             lectures_dir.append(dir)
 
         return json.dumps({"lectures": lectures_dir}), 200
